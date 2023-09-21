@@ -27,6 +27,19 @@ class RouteSerializer(serializers.ModelSerializer):
         fields = ("id", "source", "destination", "distance")
 
 
+class RouteDetailSerializer(RouteSerializer):
+    source = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field="name"
+    )
+    destination = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field="name"
+    )
+
+
 class CrewSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="__str__", read_only=True)
 
@@ -44,4 +57,3 @@ class FlightSerializer(serializers.ModelSerializer):
 class FlightListSerializer(FlightSerializer):
     route = serializers.CharField(read_only=True)
     airplane = serializers.CharField(read_only=True)
-
