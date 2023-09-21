@@ -2,7 +2,7 @@ from rest_framework import viewsets
 
 from airport.models import AirplaneType, Airplane, Airport, Route, Crew, Flight
 from airport.serializers import AirplaneTypeSerializer, AirplaneSerializer, AirportSerializer, RouteSerializer, \
-    CrewSerializer, FlightSerializer, FlightListSerializer, RouteDetailSerializer
+    CrewSerializer, FlightSerializer, FlightListSerializer, RouteDetailSerializer, FlightDetailSerializer
 
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
@@ -42,4 +42,6 @@ class FlightViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return FlightListSerializer
+        if self.action == "retrieve":
+            return FlightDetailSerializer
         return FlightSerializer

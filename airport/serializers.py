@@ -57,3 +57,13 @@ class FlightSerializer(serializers.ModelSerializer):
 class FlightListSerializer(FlightSerializer):
     route = serializers.CharField(read_only=True)
     airplane = serializers.CharField(read_only=True)
+
+
+class FlightDetailSerializer(serializers.ModelSerializer):
+    route = serializers.CharField(read_only=True)
+    crew = serializers.SlugRelatedField(many=True, read_only=True, slug_field="full_name")
+    airplane = AirplaneSerializer(many=False, read_only=True,)
+
+    class Meta:
+        model = Flight
+        fields = ("id", "route", "crew", "departure_time", "arrival_time", "airplane")
