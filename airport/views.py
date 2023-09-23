@@ -27,6 +27,25 @@ class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
 
+    @staticmethod
+    def _params_to_int(qs):
+        return [int(str_id) for str_id in qs.split(",")]
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        source = self.request.query_params.get("source")
+        if source:
+            source_ids = self._params_to_int(source)
+            queryset = queryset.filter(source__id__in=source_ids)
+
+        destination = self.request.query_params.get("destination")
+        if destination:
+            destination_ids = self._params_to_int(destination)
+            queryset = queryset.filter(destination__id__in=destination_ids)
+
+        return queryset
+
     def get_serializer_class(self):
         if self.action == "retrieve":
             return RouteDetailSerializer
