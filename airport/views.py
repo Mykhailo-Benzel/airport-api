@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import F, Count
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
@@ -77,6 +79,7 @@ class FlightViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
+
         if self.action == "list":
             queryset = (
                 queryset
@@ -87,6 +90,16 @@ class FlightViewSet(viewsets.ModelViewSet):
                     - Count("tickets")
                 )
             )
+
+        date = self.request.query_params.get("departure_time")
+        route_id_str = self.request.query_params.get("route")
+
+        if date:
+            date = datetime.strptime(date, "%Y-%m-%d").date()
+            queryset = queryset.filter(departure_time__date=date)
+
+        if route_id_str:
+            queryset = queryset.filter(route_id=int(route_id_str))
 
         return queryset
 
