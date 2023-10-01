@@ -1,25 +1,45 @@
 from datetime import datetime
 
 from django.db.models import F, Count
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.viewsets import GenericViewSet
 
 from airport.models import AirplaneType, Airplane, Airport, Route, Crew, Flight, Order
 from airport.permissions import IsAdminOrIfAuthenticatedReadOnly
-from airport.serializers import AirplaneTypeSerializer, AirplaneSerializer, AirportSerializer, RouteSerializer, \
-    CrewSerializer, FlightSerializer, FlightListSerializer, RouteDetailSerializer, FlightDetailSerializer, \
-    OrderSerializer, OrderListSerializer
+from airport.serializers import (
+    AirplaneTypeSerializer,
+    AirplaneSerializer,
+    AirportSerializer,
+    RouteSerializer,
+    CrewSerializer,
+    FlightSerializer,
+    FlightListSerializer,
+    RouteDetailSerializer,
+    FlightDetailSerializer,
+    OrderSerializer,
+    OrderListSerializer
+)
 
 
-class AirplaneTypeViewSet(viewsets.ModelViewSet):
+class AirplaneTypeViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     queryset = AirplaneType.objects.all()
     serializer_class = AirplaneTypeSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
-class AirplaneViewSet(viewsets.ModelViewSet):
+class AirplaneViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    GenericViewSet,
+):
     queryset = Airplane.objects.all()
     serializer_class = AirplaneSerializer
     authentication_classes = (TokenAuthentication,)
@@ -40,14 +60,23 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class AirportViewSet(viewsets.ModelViewSet):
+class AirportViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     queryset = Airport.objects.all()
     serializer_class = AirportSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
-class RouteViewSet(viewsets.ModelViewSet):
+class RouteViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    GenericViewSet,
+):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
     authentication_classes = (TokenAuthentication,)
@@ -78,7 +107,11 @@ class RouteViewSet(viewsets.ModelViewSet):
         return RouteSerializer
 
 
-class CrewViewSet(viewsets.ModelViewSet):
+class CrewViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     queryset = Crew.objects.all()
     serializer_class = CrewSerializer
     authentication_classes = (TokenAuthentication,)
@@ -131,7 +164,11 @@ class OrderPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    GenericViewSet,
+):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
