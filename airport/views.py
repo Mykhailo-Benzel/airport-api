@@ -1,9 +1,12 @@
 from datetime import datetime
 
 from django.db.models import F, Count
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from airport.models import AirplaneType, Airplane, Airport, Route, Crew, Flight, Order
@@ -19,7 +22,8 @@ from airport.serializers import (
     RouteDetailSerializer,
     FlightDetailSerializer,
     OrderSerializer,
-    OrderListSerializer
+    OrderListSerializer,
+    AirplaneImageSerializer,
 )
 
 
@@ -58,6 +62,25 @@ class AirplaneViewSet(
             queryset = queryset.filter(airplane_type__id__in=airplane_type_ids)
 
         return queryset
+
+    def get_serializer_class(self):
+        if self.action == "upload_image":
+            return AirplaneImageSerializer
+        return AirplaneSerializer
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="upload-image",
+        permission_classes=[IsAdminUser],
+    )
+    def upload_image(self, request, pk=None):
+        movie = self.get_object()
+        serializer = self.get_serializer(movie, data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AirportViewSet(
