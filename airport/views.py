@@ -44,7 +44,7 @@ class AirplaneViewSet(
     mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
-    queryset = Airplane.objects.all()
+    queryset = Airplane.objects.select_related("airplane_type")
     serializer_class = AirplaneSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
@@ -100,7 +100,7 @@ class RouteViewSet(
     mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
-    queryset = Route.objects.all()
+    queryset = Route.objects.select_related("destination", "source")
     serializer_class = RouteSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
@@ -142,27 +142,26 @@ class CrewViewSet(
 
 
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.all()
+    queryset = (
+        Flight.objects.
+        select_related("airplane", "route", "route__source", "route__destination").
+        prefetch_related("crew", "tickets")
+        .annotate(
+            tickets_available=(
+                    F("airplane__rows") * F("airplane__seats_in_row")
+                    - Count("tickets")
+            )
+        )
+    )
     serializer_class = FlightSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_queryset(self):
-        queryset = self.queryset
-
-        if self.action == "list":
-            queryset = (
-                queryset
-                .prefetch_related("tickets")
-                .annotate(
-                    tickets_available=F(
-                        "airplane__rows") * F("airplane__seats_in_row")
-                    - Count("tickets")
-                )
-            )
-
         date = self.request.query_params.get("departure_time")
         route_id_str = self.request.query_params.get("route")
+
+        queryset = self.queryset
 
         if date:
             date = datetime.strptime(date, "%Y-%m-%d").date()
