@@ -36,7 +36,6 @@ class AirplaneTypeViewSet(
 ):
     queryset = AirplaneType.objects.all()
     serializer_class = AirplaneTypeSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
@@ -48,7 +47,6 @@ class AirplaneViewSet(
 ):
     queryset = Airplane.objects.select_related("airplane_type")
     serializer_class = AirplaneSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     @staticmethod
@@ -104,7 +102,6 @@ class AirportViewSet(
 ):
     queryset = Airport.objects.all()
     serializer_class = AirportSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
@@ -116,7 +113,6 @@ class RouteViewSet(
 ):
     queryset = Route.objects.select_related("destination", "source")
     serializer_class = RouteSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     @staticmethod
@@ -168,7 +164,6 @@ class CrewViewSet(
 ):
     queryset = Crew.objects.all()
     serializer_class = CrewSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
@@ -185,7 +180,6 @@ class FlightViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = FlightSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_queryset(self):
@@ -242,7 +236,6 @@ class OrderViewSet(
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_queryset(self):
