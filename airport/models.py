@@ -53,7 +53,9 @@ class Airplane(models.Model):
     airplane_type = models.ForeignKey(
         AirplaneType,
         on_delete=models.CASCADE,
-        related_name="airplanes"
+        related_name="airplanes",
+        blank=True,
+        null=True
     )
     image = models.ImageField(null=True, upload_to=movie_image_file_path, blank=True)
 
