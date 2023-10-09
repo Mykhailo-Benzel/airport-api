@@ -29,15 +29,17 @@ class AirportSerializer(serializers.ModelSerializer):
 
 
 class RouteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Route
+        fields = ("id", "source", "destination", "distance")
+
+
+class RouteListSerializer(RouteSerializer):
     source = serializers.CharField(source="source.name", read_only=True)
     destination = serializers.CharField(
         source="destination.name",
         read_only=True
     )
-
-    class Meta:
-        model = Route
-        fields = ("id", "source", "destination", "distance")
 
 
 class RouteDetailSerializer(RouteSerializer):
