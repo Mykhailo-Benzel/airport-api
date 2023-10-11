@@ -10,7 +10,15 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from airport.models import AirplaneType, Airplane, Airport, Route, Crew, Flight, Order
+from airport.models import (
+    AirplaneType,
+    Airplane,
+    Airport,
+    Route,
+    Crew,
+    Flight,
+    Order
+)
 from airport.permissions import IsAdminOrIfAuthenticatedReadOnly
 from airport.serializers import (
     AirplaneTypeSerializer,
@@ -24,7 +32,8 @@ from airport.serializers import (
     FlightDetailSerializer,
     OrderSerializer,
     OrderListSerializer,
-    AirplaneImageSerializer, RouteListSerializer,
+    AirplaneImageSerializer,
+    RouteListSerializer,
 )
 
 
@@ -58,7 +67,9 @@ class AirplaneViewSet(
         airplane_type = self.request.query_params.get("airplane_type")
         if airplane_type:
             airplane_type_ids = self._params_to_int(airplane_type)
-            queryset = queryset.filter(airplane_type__id__in=airplane_type_ids)
+            queryset = queryset.filter(
+                airplane_type__id__in=airplane_type_ids
+            )
 
         return queryset
 
@@ -129,7 +140,9 @@ class RouteViewSet(
         destination = self.request.query_params.get("destination")
         if destination:
             destination_ids = self._params_to_int(destination)
-            queryset = queryset.filter(destination__id__in=destination_ids)
+            queryset = queryset.filter(
+                destination__id__in=destination_ids
+            )
 
         return queryset
 
@@ -171,7 +184,12 @@ class CrewViewSet(
 class FlightViewSet(viewsets.ModelViewSet):
     queryset = (
         Flight.objects.
-        select_related("airplane", "route", "route__source", "route__destination").
+        select_related(
+            "airplane",
+            "route",
+            "route__source",
+            "route__destination"
+        ).
         prefetch_related("crew", "tickets")
         .annotate(
             tickets_available=(
@@ -210,7 +228,8 @@ class FlightViewSet(viewsets.ModelViewSet):
             OpenApiParameter(
                 "departure_time",
                 type=OpenApiTypes.DATE,
-                description="Filter by departure_time {ex. ?departure_time=2023-09-20)",
+                description="Filter by departure_time"
+                            " {ex. ?departure_time=2023-09-20)",
             ),
             OpenApiParameter(
                 "route",

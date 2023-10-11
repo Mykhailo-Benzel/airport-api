@@ -57,7 +57,11 @@ class Airplane(models.Model):
         blank=True,
         null=True
     )
-    image = models.ImageField(null=True, upload_to=movie_image_file_path, blank=True)
+    image = models.ImageField(
+        null=True,
+        upload_to=movie_image_file_path,
+        blank=True
+    )
 
     @property
     def capacity(self):
@@ -106,7 +110,11 @@ class Flight(models.Model):
     )
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
-    crew = models.ManyToManyField(Crew, related_name="flights", blank=True)
+    crew = models.ManyToManyField(
+        Crew,
+        related_name="flights",
+        blank=True
+    )
 
     class Meta:
         ordering = ["departure_time"]
